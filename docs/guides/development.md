@@ -7,7 +7,7 @@ cd service && uv run pytest && uv run ruff check src tests && uv run mypy --stri
 cd extension && pnpm test && pnpm compile && pnpm build
 ```
 
-`pnpm compile` is `tsc --noEmit`; `pnpm test` is `vitest run`. There is no CI: run both lines before a commit.
+`pnpm compile` is `tsc --noEmit`; `pnpm test` is `vitest run`. There is no CI yet ([roadmap](../roadmap.md) item 4): run both lines before a commit.
 
 ## The loop
 
@@ -16,7 +16,9 @@ cd extension && pnpm test && pnpm compile && pnpm build
 - **Extension.** `pnpm build`, then reload the extension in `chrome://extensions`. `pnpm dev` runs WXT's
   development mode; `wxt.config.ts` turns off WXT's own browser launch (`webExt.disabled`), so load the unpacked
   output yourself.
-- **Moving the repository** changes the path of `carwatch-host`: run `uv run carwatch install` again.
+- **Moving the repository** changes the path of `carwatch-host` and of the unpacked extension: run
+  `uv run carwatch install` again and load the extension again from the new folder
+  ([setup](setup.md#after-moving-the-repository)).
 
 ## What the tests cover
 

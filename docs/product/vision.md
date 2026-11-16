@@ -14,7 +14,8 @@ like the site.
 
 ## What you get
 
-`carwatch ui` serves these pages until you stop it:
+`carwatch ui` serves these pages until you stop it. Every feature, with its status and where it lives in the
+code, is in [the feature catalogue](features/README.md).
 
 | Page | What it shows |
 |---|---|
@@ -23,8 +24,8 @@ like the site.
 | Tržište `/market` | Per brand and model: median price, year, mileage, power, yearly loss of value |
 | Ponude `/deals` | Ads listed below the model's expected price |
 | Uporedi `/compare` | Median price by year, and what a budget buys, for the models you pick |
-| Pretrage `/searches` | The searches you ran, with how many ads each one returned |
-| Povlačenje `/runs` | Collection progress; start, pause, resume or cancel a run |
+| Pretrage `/searches` | The searches you opened yourself, with how many ads each one returned |
+| Povlačenje `/runs` | Collection progress; start, pause, resume or cancel a run; recompute the fair prices |
 
 On the site itself, a small box on every ad page shows what Car Watch already knows about that ad, and a desktop
 notification tells you when a stored ad drops in price.

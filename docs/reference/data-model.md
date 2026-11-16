@@ -18,7 +18,7 @@ erDiagram
 | Table | One row per | Written by | Notes |
 |---|---|---|---|
 | `captures` | page the extension sent | `Store.ingest` | `payload` is the whole capture as JSON; emptied to `{}` after `capture_retention_days` when a run finishes. |
-| `ads` | ad, keyed by the site's ad id | `Store.ingest` | Car fields, current `price` and `status`, `first_price`, `min_price`, `max_price`, `first_seen`, `last_seen`, `has_details`. Descriptive fields keep the newest non-null value; price and status change only from the newest sighting, so a late capture from the outbox cannot overwrite a fresher one. `status` becomes `removed` when a detail page reports the ad gone. |
+| `ads` | ad, keyed by the site's ad id | `Store.ingest` | Car fields, current `price` and `status`, `first_price`, `min_price`, `max_price`, `first_seen`, `last_seen`, `has_details`. Descriptive fields keep the newest non-null value; price and status change only from the newest sighting, so a late capture from the outbox cannot overwrite a fresher one. `status` is the site's own value as sent (the analysis treats a missing one as `active`), or `removed` when a detail page reports the ad gone, until a later sighting brings a new value. |
 | `observations` | sighting of an ad with its price and status | `Store.ingest` | `source` is `search` or `ad`; `search_key` is set for searches you opened yourself. A reload with the same price and status within 10 minutes is not a new sighting. |
 | `ad_details` | ad with details | `Store.ingest` | The `AdDetail` from the ad page as JSON; a newer capture replaces an older one. |
 | `searches` | search you opened yourself, keyed by its filters without the page | `Store.ingest` | Listed on `/searches`; the worker's price bands are not stored here. |

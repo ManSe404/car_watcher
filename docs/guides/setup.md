@@ -21,6 +21,13 @@ uv run carwatch info         # where the database and the registration live
 `service/.venv/bin/carwatch-host`, so run `install` again if you move the repository. `uv run carwatch uninstall`
 removes it. Details: [commands](../reference/cli.md).
 
+## After moving the repository
+
+Two things point at the old place: the host manifest and the unpacked extension Chrome loaded. Run
+`uv sync && uv run carwatch install` in `service/`, build the extension again, then remove Car Watch in
+`chrome://extensions` and load `extension/.output/chrome-mv3` from the new place. The extension id stays the same
+(the manifest key pins it), so the host still accepts it; until it is loaded again, nothing is collected.
+
 ## The extension
 
 ```sh
