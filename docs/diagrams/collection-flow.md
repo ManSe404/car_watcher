@@ -28,7 +28,7 @@ sequenceDiagram
                 Tab->>BG: capture with task_id
                 BG->>Host: capture
                 Host->>DB: store ads and sightings, mark task done, add pages or split the price band
-                opt this finished a full pass
+                opt this finished the run (a full pass or a search you started)
                     Host->>Host: start carwatch revalue as a detached process
                 end
             else 403, 429, 503 or not JSON

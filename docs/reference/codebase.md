@@ -1,10 +1,16 @@
 # Codebase map
 
-Two folders, one per side of the native-messaging boundary. Generated folders (`extension/.output/`,
-`extension/.wxt/`, `node_modules/`, `.venv/`) are not committed.
+Two folders, one per side of the native-messaging boundary, each with its own manifest and lockfile. Generated
+folders (`extension/.output/`, `extension/.wxt/`, `node_modules/`, `.venv/`) are not committed. Each side has a
+reference page: [extension](services/extension.md), [service](services/service.md).
 
 ```text
+README.md                         what Car Watch is, how to run it, personal-use note, licence
+LICENSE.md                        PolyForm Noncommercial 1.0.0
+.gitignore                        build output, virtual environments, caches, *.db files
 extension/                        Chrome extension (WXT, TypeScript, Zod), built with pnpm
+  package.json, pnpm-lock.yaml    scripts dev, build, compile, test; dependencies
+  tsconfig.json                   TypeScript settings (extends WXT's generated config)
   wxt.config.ts                   manifest: name, public key that pins the extension id, permissions
   entrypoints/
     background.ts                 background service worker: message router, 10-minute alarm, worker tab
@@ -23,7 +29,8 @@ extension/                        Chrome extension (WXT, TypeScript, Zod), built
     worker.test.ts                data URLs, build id, response and capture verdicts
     fixtures/                     made-up, site-shaped page data
 service/                          Python package carwatch (uv, Python 3.13 or newer)
-  pyproject.toml                  dependencies, scripts carwatch and carwatch-host, ruff, mypy, pytest
+  pyproject.toml, uv.lock         dependencies, scripts carwatch and carwatch-host, ruff, mypy, pytest
+  .python-version                 the Python uv uses for the virtual environment
   src/carwatch/
     host.py                       entry point carwatch-host: framing, request validation, dispatch
     cli.py                        entry point carwatch: install, uninstall, info, ui, revalue
@@ -41,8 +48,10 @@ service/                          Python package carwatch (uv, Python 3.13 or ne
     fmt.py                        Serbian number and date formatting
     templates/                    Jinja templates of the pages
   tests/                          pytest: host (also as a real process), store, crawl, analysis, install, UI, helpers
+    conftest.py                   settings, store, UI client and host fixtures over a temporary database
     fixtures/capture_*.json       the contract examples written by the extension's tests
-docs/                             this documentation
+docs/                             this documentation: product/, architecture/, diagrams/, reference/, guides/, adr/,
+                                  roadmap.md; the index is docs/README.md
 ```
 
 Entry points: `carwatch-host` (`host.main`), `carwatch` (`cli.main`), and in the extension the three WXT

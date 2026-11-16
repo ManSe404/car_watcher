@@ -32,9 +32,9 @@ flowchart TB
     content -- "fetch /_next/data/... (worker mode)" --> site
     bg -- "runtime.sendNativeMessage" --> host
     host --> db
-    host -- "start when a full pass ends" --> revalue
+    host -- "start when a run ends" --> revalue
     revalue --> db
     ui --> db
-    ui -- "start on demand" --> revalue
+    ui -- "same valuation, in its own process, on demand" --> revalue
     host --> notify
 ```

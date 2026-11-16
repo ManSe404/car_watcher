@@ -22,6 +22,10 @@ native byte order, then the JSON. The requests are `HostRequest` in `service/src
 Every answer is `{"ok": true, "value": ...}` or `{"ok": false, "error": "...", "retry": bool}`. `retry` is true
 when the request was valid but Car Watch failed, so the extension keeps a capture for later.
 
+`status` and `work-next` also prepare work before they answer: they return expired leases to pending and, with
+the automatic switch on, start a due full pass and plan detail pages. A capture with a `task_id` marks that task
+done and may add pages or finish the run; a finished run starts `carwatch revalue`.
+
 The capture contract has two sides that must agree: `extension/lib/extract.ts` writes it and
 `service/src/carwatch/models.py` reads it. `service/tests/fixtures/capture_*.json` are the shared examples (see
 [development](../guides/development.md#the-contract-between-extension-and-service)).

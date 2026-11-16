@@ -3,7 +3,9 @@
 How Car Watch is built: a Chrome extension that collects, and a Python service on the same computer that stores,
 plans and analyses. The diagrams are in [../diagrams/](../diagrams/): [context](../diagrams/context.md),
 [containers](../diagrams/container.md), [pages you open](../diagrams/page-capture.md) and
-[planned collection](../diagrams/collection-flow.md).
+[planned collection](../diagrams/collection-flow.md). Each deployable has its own page:
+[the extension](../reference/services/extension.md) and [the service](../reference/services/service.md). The
+decisions behind the shape are in [../adr/](../adr/).
 
 ## Context
 
@@ -84,13 +86,16 @@ The host decides what to fetch; the extension only executes it. See
    data URL with the user's own session, waiting `request_gap_seconds` plus up to one second of random jitter
    between requests.
 3. Each answer goes back as a capture with its `task_id`. When the first page of a search band is in, the host
-   adds the remaining pages (25 ads a page) or halves the band if it holds more than `partition_cap` ads.
+   adds the remaining pages (25 ads a page) or halves the band if it holds more than `partition_cap` ads. The
+   worker does not read the host's answer to a capture: a capture the host rejects leaves its task leased until
+   `lease_seconds` pass, and then the task is handed out again ([roadmap](../roadmap.md) item 1).
 4. When no task is left, the tab reports `work-done` and the background closes it.
 
-What the host plans by itself, each time it prepares work:
+What the host plans by itself, each time it prepares work (on every `status` and `work-next` message, and when
+the UI's `/runs` page is opened):
 
-- **A full pass** over the whole site when the last one started `crawl_interval_days` ago or more. The README
-  estimates one pass at about 3,000 search pages; the number depends on the site.
+- **A full pass** over the whole site when the last one started `crawl_interval_days` ago or more. How many search
+  pages a pass takes depends on how many ads the site has, at 25 a page.
 - **Detail pages** (damage, registration, origin, equipment) for active ads seen in the last 10 days that have
   none yet, up to `details_daily_limit` a day, best deals first. They wait until no search page is pending, and
   for up to 15 minutes after a full pass so the fair prices are fresh.
@@ -102,7 +107,7 @@ What the host plans by itself, each time it prepares work:
 |---|---|---|
 | `blocked` | 403, 429, 503, or HTML instead of JSON (a challenge page) | Pauses all collection for `blocked_pause_hours` and returns every leased task to pending. The worker tab stops. Nothing tries to get around it. |
 | `retry` | 404 with HTML: the site deployed a new build | Hands the task out again; the tab reloads to learn the new build id, at most three times in ten minutes. |
-| `gone` | The ad no longer exists | Marks the task failed and the ad `removed`. |
+| `gone` | A detail page answers `notFound`, redirects, comes back as a search, or is neither a search nor an ad | Marks the task failed and the ad `removed`. The last case can also be a change in the site's data ([roadmap](../roadmap.md) item 2). |
 | `drift` | The JSON changed shape | Counts an attempt; nothing is stored. On a page you opened, the popup shows "Sajt je promenio format". |
 | `error` | Anything else | Counts an attempt; a task fails for good after two. |
 
@@ -120,8 +125,9 @@ What the host plans by itself, each time it prepares work:
 `carwatch revalue` fits gradient boosting on log price over the latest snapshot (ads seen since the start of the
 last finished full pass, or the last 14 days before the first one) with five-fold out-of-fold predictions, so
 every ad's expected price comes from a model that never saw that ad. It needs at least 150 ads. It replaces the
-`valuations` table. The host starts it as a detached process when a full pass finishes; the UI starts it from
-`/runs`, and you can run it by hand. A lock file next to the database keeps it to one at a time.
+`valuations` table. The host starts it as a detached process whenever a collection run finishes, a full pass or
+a search you started; the UI runs it inside its own process from the button on `/runs`; and you can run it by
+hand. A lock file next to the database keeps it to one at a time.
 
 ### The UI
 
@@ -166,9 +172,13 @@ One SQLite file (`CARWATCH_DB_PATH`), WAL mode, schema version 3. Tables and wha
 The original 2023 requests + BeautifulSoup scraper was removed. It stopped working when the site moved to
 Next.js behind a Cloudflare challenge. It is still in git history: `git show 2546d05:main.py`.
 
+## Decisions
+
+- [0001](../adr/0001-collect-in-the-users-own-browser.md): collect in the user's own browser from the site's page
+  data.
+- [0002](../adr/0002-native-messaging-instead-of-an-http-service.md): native messaging instead of a local HTTP
+  service.
+
 ## Open
 
-- `AdSummary.ui_url` exists in `models.py` and the badge shows a link to the UI when it is set, but nothing sets
-  it, so the badge never links to the UI.
-- The host is registered on Linux only; macOS and Windows registration is not built.
-- The UI is in Serbian only.
+Known gaps and planned work, in priority order, are in the [roadmap](../roadmap.md). The UI is in Serbian only.

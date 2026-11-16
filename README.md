@@ -29,7 +29,9 @@ UI at http://127.0.0.1:8050/ until you stop it.
 ## Documentation
 
 [docs/README.md](docs/README.md) lists the documents in reading order: what you get and how to control
-collection, setup, the architecture with diagrams, the database, the settings and development.
+collection, setup, the architecture with diagrams, the database, the settings and development. Every feature
+with its status is in [the feature catalogue](docs/product/features/README.md); open work is in
+[the roadmap](docs/roadmap.md).
 
 ## Personal use only
 
