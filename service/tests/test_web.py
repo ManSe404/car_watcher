@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import pytest
 from fastapi.testclient import TestClient
 
 from carwatch import analysis
@@ -26,7 +27,11 @@ def test_ui_buttons_only_accept_posts_from_the_ui(client: TestClient) -> None:
     assert "pauzirano do" not in client.get("/runs").text
 
 
-def test_analysis_pages_with_data(client: TestClient, store: Store) -> None:
+def test_analysis_pages_with_data(client: TestClient, store: Store, monkeypatch: pytest.MonkeyPatch) -> None:
+    # The pages read the snapshot at the real clock, and before the first full pass the snapshot is the last two
+    # weeks, so synthetic ads dated NOW drop out of it two weeks after NOW. Pin the pages' clock to NOW.
+    load_snapshot = analysis.load_snapshot
+    monkeypatch.setattr(analysis, "load_snapshot", lambda s, now=None: load_snapshot(s, now or NOW))
     synthetic_market(store)
     analysis.run_valuation(store, NOW)
 
