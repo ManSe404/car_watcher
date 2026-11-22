@@ -1,0 +1,85 @@
+# Every check that must pass before a change is merged, one job per deployable:
+# - service: the lock file matches pyproject.toml, ruff, mypy in strict mode and the offline tests;
+# - extension: a frozen install, the type check, the tests and a full build.
+# The contract fixtures under service/tests/fixtures are written by the extension's tests and read by the service's,
+# so both jobs together check the native-messaging contract. The job names are the required checks on master.
+name: checks
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  service:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: service
+    steps:
+      - uses: actions/checkout@v7
+
+      # setup-uv publishes no floating major tag, only exact releases.
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          enable-cache: true
+          cache-dependency-glob: service/uv.lock
+
+      - name: Python
+        run: uv python install
+
+      - name: The lock file matches pyproject.toml
+        run: uv lock --check
+
+      - name: Install, exactly as locked
+        run: uv sync --frozen
+
+      - name: ruff
+        run: |
+          uv run --frozen ruff check src tests
+          uv run --frozen ruff format --check src tests
+
+      - name: mypy
+        run: uv run --frozen mypy --strict src
+
+      - name: Tests
+        run: uv run --frozen pytest
+
+  extension:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: extension
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: extension/pnpm-lock.yaml
+
+      - name: Install, exactly as locked
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: pnpm compile
+
+      - name: Tests
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build

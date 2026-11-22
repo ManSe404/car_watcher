@@ -4,7 +4,15 @@ Collection, storage, the fair-price model and the UI work end to end (see [the f
 What follows is open, in priority order: first the fixes that keep collection correct and polite to the site, then
 the features the weekly passes exist for.
 
-Status: **open** (not started), **idea** (not decided).
+Status: **open** (not started), **idea** (not decided), **done** (kept here until the list is renumbered).
+
+## Paused
+
+Car Watch is **paused** since 2026-11-22: the owner stopped using it, the extension is not loaded, so nothing is
+collected and the items below wait. The code, the tests and CI still work. To resume: `pnpm build` in
+`extension/`, load `extension/.output/chrome-mv3` unpacked in `chrome://extensions` (the host stays registered;
+`uv run carwatch info` in `service/` shows it), open a search on the site and check that the popup shows captures
+arriving and that the newest `captured_at` in the database moves.
 
 ## Collection correctness
 
@@ -26,10 +34,9 @@ Status: **open** (not started), **idea** (not decided).
    one small search refits the model over the whole snapshot. The commit that introduced it meant a finished full
    pass. Fix: return the run's kind and start the valuation for `full` only; update the host test that uses a
    search run.
-4. **CI on pull requests.** open.
-   Nothing runs the checks on a pull request, and the contract between the two sides is only checked when both
-   test suites run. Add a workflow with the service checks (`uv sync --frozen`, pytest, ruff, mypy) and the
-   extension checks (`pnpm install --frozen-lockfile`, test, compile, build), then make it a required check.
+4. **CI on pull requests.** done (2026-11-22).
+   `.github/workflows/checks.yml` runs the service checks and the extension checks on every pull request; the jobs
+   `service` and `extension` are required checks on `master`.
 5. **Pin the host's replies like the capture.** open.
    The status, work and summary shapes are written twice, in `service/src/carwatch/models.py` and
    `extension/lib/messages.ts`, with no shared example; a rename on the Python side breaks the popup only at

@@ -8,6 +8,7 @@ reference page: [extension](services/extension.md), [service](services/service.m
 README.md                         what Car Watch is, how to run it, personal-use note, licence
 LICENSE.md                        PolyForm Noncommercial 1.0.0
 .gitignore                        build output, virtual environments, caches, *.db files
+.github/workflows/checks.yml      CI on every pull request: jobs service and extension (required on master)
 extension/                        Chrome extension (WXT, TypeScript, Zod), built with pnpm
   package.json, pnpm-lock.yaml    scripts dev, build, compile, test; dependencies
   tsconfig.json                   TypeScript settings (extends WXT's generated config)

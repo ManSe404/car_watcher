@@ -1,7 +1,9 @@
 # Features
 
 What Car Watch offers today and what is planned, each row checked against the code. Paths are relative to the
-repository root; `carwatch/` means `service/src/carwatch/`.
+repository root; `carwatch/` means `service/src/carwatch/`. The project is paused since 2026-11-22 (nothing is
+collected while the extension is not loaded); the statuses below are what the code does once it is loaded again
+([roadmap](../../roadmap.md#paused)).
 
 | Feature | What you can do | Status | Where in code | Doc |
 |---|---|---|---|---|

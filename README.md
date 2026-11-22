@@ -1,5 +1,8 @@
 # Car Watch
 
+> **Status: paused** since 2026-11-22. Nothing is collected while the extension is not loaded; the code and its
+> checks still work. How to resume is in [the roadmap](docs/roadmap.md#paused).
+
 Car Watch collects the passenger-car ads from polovniautomobili.com into a SQLite database on your own
 machine and helps you judge prices. You get each ad's price history and how long it has been listed, market
 statistics per model, and a fair-price model that flags ads listed below what similar cars cost.
