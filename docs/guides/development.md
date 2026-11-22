@@ -7,7 +7,9 @@ cd service && uv run pytest && uv run ruff check src tests && uv run mypy --stri
 cd extension && pnpm test && pnpm compile && pnpm build
 ```
 
-`pnpm compile` is `tsc --noEmit`; `pnpm test` is `vitest run`. There is no CI yet ([roadmap](../roadmap.md) item 4): run both lines before a commit.
+`pnpm compile` is `tsc --noEmit`; `pnpm test` is `vitest run`. CI (`.github/workflows/checks.yml`) runs the same
+checks on every pull request, one job per side (`service`, `extension`), plus `uv lock --check` and
+`ruff format --check`; both jobs are required checks on `master`. Run both lines before you push.
 
 ## The loop
 
